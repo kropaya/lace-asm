@@ -20,7 +20,7 @@ fn convert_utf8_to_starchar(text: &str) -> &[u8] {
   panic!("Not implemented.");
 }
 
-fn make_quantifier_block<'a>(quant: &'a str, vars: &'a Vec<&str>) -> &'a [u8] {
+fn make_quantifier_block(quant: &str, vars: &Vec<&str>) -> Vec<u8> {
   let quant: u8 = match quant {
     "μ" => 1,
     "∀" => 2,
@@ -41,10 +41,10 @@ fn make_quantifier_block<'a>(quant: &'a str, vars: &'a Vec<&str>) -> &'a [u8] {
     output.extend(starlength);
     output.extend(starchar);
   }
-  return output.as_ref();
+  return output;
 }
 
-named!(quantifier<&str, &[u8]>,
+named!(quantifier<&str, Vec<u8> >,
        // This gives us back a Vec of variables as utf-8 strings
        do_parse!(
          quant: alt!(tag_s!("μ") | tag_s!("∀") | tag_s!("∃") | tag_s!("ı") | tag_s!("λ")) >>
