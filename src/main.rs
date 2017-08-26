@@ -12,11 +12,11 @@ fn main() {
 
 // We should use a bytecode map at some point
 
-fn make_varint(num: &u32) -> &[u8] {
+fn make_varint(num: &u32) -> Vec<u8> {
   panic!("Not implemented.");
 }
 
-fn convert_utf8_to_starchar(text: &str) -> &[u8] {
+fn convert_utf8_to_starchar(text: &str) -> Vec<u8> {
   panic!("Not implemented.");
 }
 
@@ -31,7 +31,10 @@ fn make_quantifier_block(quant: &str, vars: &Vec<&str>) -> Vec<u8> {
   };
   let mut output: Vec<u8> = vec![quant];
   // We need to add the number of variables
-  let len = vars.len();
+  let len = vars.len() as u32;
+  let len = make_varint(&len);
+  output.extend(len);
+  
   // We need to turn len into a varint
   // Convert each variable in turn, then add the varint length plus it
   for var in vars.iter() {
