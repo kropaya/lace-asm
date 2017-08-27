@@ -12,8 +12,18 @@ fn main() {
 
 // We should use a bytecode map at some point
 
-fn make_varint(num: &u32) -> Vec<u8> {
-  panic!("Not implemented.");
+fn make_varint(num: u32) -> Vec<u8> {
+  let mut base_num = num;
+  let num_of_bytes = ((32 - base_num.leading_zeros()) / 7);
+  let mut bytes : Vec<u8> = Vec::new();
+  let mut i = 0;
+  while i < (num_of_bytes - 1) {
+    bytes.push(((127 & base_num) | 128) as u8);
+    base_num = (base_num) >> 7;
+    i += 1;
+  }
+  bytes.push(base_num as u8);
+  return bytes;
 }
 
 fn convert_utf8_to_starchar(text: &str) -> Vec<u8> {
@@ -32,7 +42,7 @@ fn make_quantifier_block(quant: &str, vars: &Vec<&str>) -> Vec<u8> {
   let mut output: Vec<u8> = vec![quant];
   // We need to add the number of variables
   let len = vars.len() as u32;
-  let len = make_varint(&len);
+  let len = make_varint(len);
   output.extend(len);
   
   // We need to turn len into a varint
@@ -40,7 +50,7 @@ fn make_quantifier_block(quant: &str, vars: &Vec<&str>) -> Vec<u8> {
   for var in vars.iter() {
     let starchar = convert_utf8_to_starchar(var);
     let len = starchar.len() as u32;
-    let starlength = make_varint(&len);
+    let starlength = make_varint(len);
     output.extend(starlength);
     output.extend(starchar);
   }
